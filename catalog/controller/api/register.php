@@ -20,7 +20,7 @@ class ControllerApiRegister extends Controller
 		$this->load->model('account/customer');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-			$customer_id = $this->model_account_customer->addCustomer($this->request->post);
+			$json['customer_id'] = $this->model_account_customer->addCustomer($this->request->post);
 
 			// Clear any previous login attempts for unregistered accounts.
 			//$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
@@ -28,17 +28,20 @@ class ControllerApiRegister extends Controller
 			//$this->customer->login($this->request->post['email'], $this->request->post['password']);
 
 			//unset($this->session->data['guest']);
+			
 
             $json['status'] = true;
 			//$this->response->redirect($this->url->link('account/success'));
             $this->response->addHeader('Content-Type: application/json');
             $this->response->setOutput(json_encode($json));
 		}
-
-        $json['status'] = false;
-			//$this->response->redirect($this->url->link('account/success'));
-        $this->response->addHeader('Content-Type: application/json');
+		if (!isset($json['customer_id'])){
+			$json['status'] = false;
+			$this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+		}
+        
+			//$this->response->redirect($this->url->link('account/success'));
 		// $data['breadcrumbs'] = array();
 
 		// $data['breadcrumbs'][] = array(
